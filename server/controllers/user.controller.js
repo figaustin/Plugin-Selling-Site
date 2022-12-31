@@ -27,6 +27,28 @@ module.exports.getAllUsers = (req, res) => {
         .catch(error => {res.json({message: "Something went wrong!", error: error})})
 };
 
+module.exports.login = async(req, res) => {
+    const user = await User.findOne({email: req.body.email });
+
+        if(user === null){
+            return res.json({error: "User not found."})
+        }
+
+        const correctPassword = await bcrypt.compare(req.body.password, user.password);
+
+        if(!correctPassword) {
+            return res.json({error: "Password is incorrect!"})
+        }
+
+        const userToken = jwt.sign({
+            id: user._id,
+            userName : user.userName
+        }, process.env.SECRET_KEY);
+
+        res.cookie('usertoken', userToken, process.env.SECRET_KEY, {httpOnly: true})
+            .json({message: "Login Success!"});
+}
+
 module.exports.register = (req, res) => {
     User.find({email: req.body.email})
         .then(usersWithEmail => {
@@ -51,3 +73,17 @@ module.exports.register = (req, res) => {
         })
         .catch(error => {res.json({message: "Something went wrong!", error: error})})
 };
+
+module.exports.logout = (req, res) => {
+    res.clearCookie('usertoken');
+    res.sendStatus(200);
+}
+
+module.exports.getLoggedInUser = (req, res) => {
+    const decodedJWT = jwt.decode(req.cookies.usertoken, {complete: true})
+
+    User.findOne({_id: decodedJWT.payload.id})
+        .then(foundUser => {res.json({results: foundUser})})
+        .catch(error => {res.json({message: "Something went wrong!", error: error})})
+};
+

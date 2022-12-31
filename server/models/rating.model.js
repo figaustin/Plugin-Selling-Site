@@ -14,6 +14,8 @@ const RatingSchema = new mongoose.Schema({
 
     amount: {
         type: Number,
+        min: [1, "Rating must be from 1-5"],
+        max: [5, "Rating must be from 1-5"]
     }
     },
 
