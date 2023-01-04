@@ -25,11 +25,8 @@ const UserSchema = new mongoose.Schema({
     admin: {
         type: Boolean
     },
-    uploadedPlugins: {
-        type:[MinecraftPlugin.MinecraftPluginSchema]
-    },
     purchasedPlugins: {
-        type: [MinecraftPlugin.MinecraftPluginSchema]
+        type: [mongoose.Schema.Types.ObjectId]
     }
     },
 

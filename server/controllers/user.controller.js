@@ -2,6 +2,9 @@ const User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const axios = require('axios')
+const mongoose = require('mongoose')
+const MinecraftPlugin = require('../models/plugin.model')
+
 
 module.exports.findUserById = (req, res) => {
     User.findOne({_id: req.params.id})
@@ -10,13 +13,13 @@ module.exports.findUserById = (req, res) => {
 };
 
 module.exports.findUsersUploadedPlugins = (req, res) => {
-    User.findOne({_id: req.params.id})
+    MinecraftPlugin.find({author: req.params.author_id})
         .then(user => {res.json({uploadedPlugins: user.uploadedPlugins})})
         .catch(error => {res.json({message: "Something went wrong!", error: error})})
 };
 
 module.exports.findUserPurchasedPlugins = (req, res) => {
-    User.findOne({_id: req.params.id})
+    User.find({_id: req.params.id})
         .then(user => {res.json({purchasedPlugins: user.purchasedPlugins})})
         .catch(error => {res.json({message: "Something went wrong!", error: error})})
 };
@@ -43,9 +46,9 @@ module.exports.login = async(req, res) => {
         const userToken = jwt.sign({
             id: user._id,
             userName : user.userName
-        }, process.env.SECRET_KEY);
+        }, "TokEN!");
 
-        res.cookie('usertoken', userToken, process.env.SECRET_KEY, {httpOnly: true})
+        res.cookie('usertoken', userToken, "TokEN!", {httpOnly: true})
             .json({message: "Login Success!"});
 }
 
@@ -58,10 +61,10 @@ module.exports.register = (req, res) => {
                     .then(user => {
                         const userToken = jwt.sign({
                             id: user._id,
-                            username: user.username
-                        }, "TestingSecretKey");
+                            userName: user.userName
+                        }, "TokEN!");
 
-                        res.cookie('usertoken', userToken, "TestingSecretKey", {
+                        res.cookie('usertoken', userToken, "TokEN!", {
                             httpOnly: true
                         })
                         .json({message: "Registration Success!", user: user})

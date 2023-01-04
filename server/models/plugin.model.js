@@ -4,7 +4,8 @@ const Rating = require('./rating.model')
 const MinecraftPluginSchema = new mongoose.Schema({
     author : {
         type: mongoose.Schema.Types.ObjectId,
-        ref : "User"
+        ref : "User",
+        required : [true, "This plugin must have an author!"]
     },
 
     name: {
