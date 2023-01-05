@@ -2,6 +2,15 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const MinecraftPlugin = require('./plugin.model')
 
+const PurchasedPlugin = new mongoose.Schema({
+    plugin_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'MinecraftPlugin'
+    },
+},
+    {timestamps: true}
+);
+
 const UserSchema = new mongoose.Schema({
 
     userName: {
@@ -25,14 +34,19 @@ const UserSchema = new mongoose.Schema({
     admin: {
         type: Boolean
     },
-    purchasedPlugins: {
+    uploadedPlugins: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'MinecraftPlugin'
+    },
+    purchasedPlugins: {
+        type: [PurchasedPlugin],
     }
     },
 
     {timestamps: true}
 );
+
+
 
 
 UserSchema.virtual('confirm')

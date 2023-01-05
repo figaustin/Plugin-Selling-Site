@@ -7,8 +7,6 @@ module.exports = (app) => {
     app.post("/api/user/register", UserController.register);
     app.get("/api/user/getLoggedInUser", UserController.getLoggedInUser);
     app.get("/api/user/logout", UserController.logout);
-    app.get("/api/user/:id/plugins/uploaded", UserController.findUsersUploadedPlugins);
-    app.get("/api/user/:id/plugins/purchased", UserController.findUserPurchasedPlugins);
     app.get("/api/user/:id", UserController.findUserById);
-    app.put("/api/user/purchasePlugin/:pluginId", UserController.userPurchasePlugin);
+    app.put("/api/user/:id/purchasePlugin/:pluginId", UserController.userPurchasePlugin);
 }

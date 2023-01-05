@@ -5,21 +5,9 @@ const MinecraftPlugin = require('../models/plugin.model')
 
 
 module.exports.findUserById = (req, res) => {
-    User.findOne({_id: req.params.id})
+    User.findOne({_id: req.params.id}).populate('purchasedPlugins').populate('uploadedPlugins')
         .then(user => {res.json({user: user})})
         .catch(error => res.json({message: "Something went wrong!", error: error}))
-};
-
-module.exports.findUsersUploadedPlugins = (req, res) => {
-    MinecraftPlugin.find({author: req.params.author_id})
-        .then(user => {res.json({uploadedPlugins: user.uploadedPlugins})})
-        .catch(error => {res.json({message: "Something went wrong!", error: error})})
-};
-
-module.exports.findUserPurchasedPlugins = (req, res) => {
-    User.findOne({_id: req.params.id}).populate('purchasedPlugins')
-        .then(user => {res.json({purchasedPlugins: user.purchasedPlugins})})
-        .catch(error => {res.json({message: "Something went wrong!", error: error})})
 };
 
 module.exports.getAllUsers = (req, res) => {
@@ -95,19 +83,32 @@ module.exports.userPurchasePlugin = (req, res) => {
 
    
     if(req.cookies.usertoken != null) {
-        User.findOne({_id: decodedJWT.payload.id})
-            .then(user => {
-                if(user.purchasedPlugins.includes(req.params.pluginId)) {
-                    res.json({message: "User has already purchased this plugin!"})
-                }
-                else {
-                    User.findByIdAndUpdate({_id: decodedJWT.payload.id}, { $push: {purchasedPlugins: req.params.pluginId}})
-                    .then(user => {res.json({user: user})})
-                    .catch(error => {res.json({message: "Something went wrong!", error: error})})
-                 }
-            })
-
+        if(decodedJWT.payload.id == req.params.id || decodedJWT.payload.admin) {
+            const purchase = {
+                plugin_id: req.params.pluginId
+            }
         
+            User.findOne({_id: req.params.id})
+                .then(user => {
+                    const alreadyPurchased = (item) => item === req.params.pluginId;
+                    
+                    if(user.purchasedPlugins.some(alreadyPurchased)) {
+                        res.json({message: "User has already purchased this plugin!"})
+                    }
+                    else {
+                        
+
+                        User.findByIdAndUpdate({_id: decodedJWT.payload.id}, { $push: {purchasedPlugins: purchase}})
+                        .then(user => {res.json({user: user})})
+                        .catch(error => {res.json({message: "Something went wrong!", error: error})})
+                    }
+                })
+
+        } else {
+            res.json({message: "Something went wrong!"})
+        }
+    } else {
+        res.json({message: "Please login to do that!"})
     }
 }
 

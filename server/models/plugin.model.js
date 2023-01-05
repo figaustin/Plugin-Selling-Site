@@ -1,24 +1,5 @@
 const mongoose = require('mongoose');
-
-
-const Rating = new mongoose.Schema({
-
-    user_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    },
-    amount: {
-        type: Number,
-        min: [1, "Rating must be from 1-5"],
-        max: [5, "Rating must be from 1-5"]
-    },
-    review: {
-        type: String,
-        minLength: [10, "Review must be at least 10 characters long!"],
-    }
-    },
-
-);
+const Rating = require('../models/rating.model')
 
 const MinecraftPluginSchema = new mongoose.Schema({
     author : {
@@ -55,7 +36,8 @@ const MinecraftPluginSchema = new mongoose.Schema({
         type: String
     },
     ratings: {
-        type: [Rating]
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Rating'
     }
 
 })

@@ -2,14 +2,16 @@ const express = require('express');
 const app = express();
 const port = 8000;
 const cors = require("cors");
-const cookieParser = require('cookie-parser')
-    
+const cookieParser = require('cookie-parser');
+
+global.__basedir = __dirname;    
 
 require("./server/config/mongoose.config");
 
 app.use(express.json(), express.urlencoded({ extended: true }));
 app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
 app.use(cookieParser());
+
 
 const UserRoutes = require('./server/routes/user.routes')
 UserRoutes(app);

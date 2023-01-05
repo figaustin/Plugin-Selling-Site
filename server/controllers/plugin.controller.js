@@ -1,12 +1,35 @@
 const MinecraftPlugin = require('../models/plugin.model')
 const User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
+const uploadFile = require('../middleware/upload');
 
 
 module.exports.findPluginById = (req, res) => {
-    MinecraftPlugin.findOne({_id: req.params.id})
+    MinecraftPlugin.findOne({_id: req.params.id}).populate('ratings')
         .then(minecraftPlugin => {res.json({minecraftPlugin: minecraftPlugin})})
         .catch(err => res.json({message: "Something went wrong!", error: err}))
+};
+
+module.exports.uploadPlugin = async (req, res) => {
+    try { 
+        await uploadFile(req, res);
+
+        if(req.file == undefined) {
+            return res.status(400).send({message: "Please upload a file!"});
+        }
+        
+        MinecraftPlugin.findByIdAndUpdate({_id: req.params.id}, {$set: {file: "filename"}})
+        res.status(200).send({
+            message: "Uploaded the file successfully: " + req.file.originalname, 
+        });
+        
+            // .then(plugin => {res.json({plugin: plugin})})
+            // .catch(error => res.json({error: error}))
+    } catch (err) {
+        res.status(500).send({
+            message: `Could not upload the file: ${err}`,
+        });
+    }
 };
 
 module.exports.addNewPlugin = (req, res) => {
@@ -25,7 +48,12 @@ module.exports.addNewPlugin = (req, res) => {
         }
 
         MinecraftPlugin.create(newPlugin)
-        .then(newPlugin => {res.json({newPlugin: newPlugin})})
+        .then(newPlugin => {
+            res.json({newPlugin: newPlugin})
+            User.findByIdAndUpdate({_id: decodedJWT.payload.id}, { $push: {uploadedPlugins: newPlugin}})
+                .then(user => res.json({user: user}))
+                .catch(error => res.json({error: error}))
+        })
         .catch(error => {res.json({message: "Something went wrong!", error: error})})
     } else {
         res.json({message: "User must be logged into create a plugin!"})
