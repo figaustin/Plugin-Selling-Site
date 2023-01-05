@@ -7,5 +7,5 @@ module.exports = (app) => {
     app.post("/api/plugin/create", MinecraftPluginController.addNewPlugin);
     app.put("/api/plugin/update/:id", MinecraftPluginController.updatePlugin);
     app.delete("/api/plugin/delete/:id", MinecraftPluginController.deletePlugin);
-
+    app.post("/api/plugin/:id/ratings/add", MinecraftPluginController.addRatingToPlugin);
 }

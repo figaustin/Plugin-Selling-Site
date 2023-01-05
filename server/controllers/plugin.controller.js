@@ -74,10 +74,9 @@ module.exports.addRatingToPlugin = (req, res) => {
     const decodedJWT = jwt.decode(req.cookies.usertoken, {complete: true});
 
     if(req.cookies.usertoken != null) {
-        MinecraftPlugin.findOne({_id: decodedJWT.payload.id})
-            .then(rating => {
-                MinecraftPlugin.findByIdAndUpdate()
-            })
+        MinecraftPlugin.findByIdAndUpdate({_id: req.params.id}, { $push: {ratings: req.body}})
+            .then(rating => {res.json({rating: rating})})
+            .catch(error => {res.json({message: "Something went wrong!", error: error})})
     }
     
 }

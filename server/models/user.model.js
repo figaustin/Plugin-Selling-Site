@@ -26,7 +26,8 @@ const UserSchema = new mongoose.Schema({
         type: Boolean
     },
     purchasedPlugins: {
-        type: [mongoose.Schema.Types.ObjectId]
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'MinecraftPlugin'
     }
     },
 

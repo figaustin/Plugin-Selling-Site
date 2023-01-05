@@ -17,7 +17,7 @@ module.exports.findUsersUploadedPlugins = (req, res) => {
 };
 
 module.exports.findUserPurchasedPlugins = (req, res) => {
-    User.find({_id: req.params.id})
+    User.findOne({_id: req.params.id}).populate('purchasedPlugins')
         .then(user => {res.json({purchasedPlugins: user.purchasedPlugins})})
         .catch(error => {res.json({message: "Something went wrong!", error: error})})
 };

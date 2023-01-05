@@ -7,11 +7,6 @@ const Rating = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
-    plugin_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "MinecraftPlugin",
-    },
-
     amount: {
         type: Number,
         min: [1, "Rating must be from 1-5"],
