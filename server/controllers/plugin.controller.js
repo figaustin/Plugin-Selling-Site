@@ -2,10 +2,11 @@ const MinecraftPlugin = require('../models/plugin.model')
 const User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const uploadFile = require('../middleware/upload');
+const Tag = require('../models/tag.model');
 
 
 module.exports.findPluginById = (req, res) => {
-    MinecraftPlugin.findOne({_id: req.params.id}).populate('ratings')
+    MinecraftPlugin.findOne({_id: req.params.id}).populate('ratings').populate('tags')
         .then(minecraftPlugin => {res.json({minecraftPlugin: minecraftPlugin})})
         .catch(err => res.json({message: "Something went wrong!", error: err}))
 };
@@ -31,6 +32,25 @@ module.exports.uploadPlugin = async (req, res) => {
         });
     }
 };
+
+module.exports.downloadPlugin = (req, res) => {
+
+    MinecraftPlugin.findById({_id: req.params.id})
+        .then(plugin => {
+            const fileName = plugin.file;
+            const directoryPath = __basedir + "/uploads/";
+
+            res.download(directoryPath + fileName, fileName, (err) => {
+                if(err) {
+                    res.status(500).send({
+                        message: "Could not download the file" + err,
+                    });
+                }
+            });
+        })
+        .catch(error => {res.json({message: "Something went wrong!", error: error})})
+    
+}
 
 module.exports.addNewPlugin = (req, res) => {
     const decodedJWT = jwt.decode(req.cookies.usertoken, {complete: true});
@@ -103,6 +123,17 @@ module.exports.addRatingToPlugin = (req, res) => {
 
     if(req.cookies.usertoken != null) {
         MinecraftPlugin.findByIdAndUpdate({_id: req.params.id}, { $push: {ratings: req.body}})
+            .then(rating => {res.json({rating: rating})})
+            .catch(error => {res.json({message: "Something went wrong!", error: error})})
+    }
+    
+}
+
+module.exports.addTagToPlugin = (req, res) => {
+    const decodedJWT = jwt.decode(req.cookies.usertoken, {complete: true});
+
+    if(req.cookies.usertoken != null) {
+        MinecraftPlugin.findByIdAndUpdate({_id: req.params.id}, { $push: {tags: req.params.tagId}})
             .then(rating => {res.json({rating: rating})})
             .catch(error => {res.json({message: "Something went wrong!", error: error})})
     }

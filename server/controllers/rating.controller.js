@@ -15,10 +15,10 @@ module.exports.createNewRating = (req, res) => {
     if(req.cookies.usertoken != null) {
         User.findOne({_id: decodedJWT.payload.id})
             .then(user => {
-                if(!user.purchasedPlugins.includes(req.params.id)) {
+                if(user.purchasedPlugins.includes(req.params.pluginId)) {
                     const newRating = {
                         user_id: decodedJWT.payload.id,
-                        plugin_id: req.params.id,
+                        plugin_id: req.params.pluginId,
                         amount: req.body.amount,
                         review: req.body.review,
                     }
@@ -26,12 +26,12 @@ module.exports.createNewRating = (req, res) => {
                     Rating.create(newRating)
                         .then(rating => {res.json({rating: rating})})
                         .catch(error => {res.json({message: "Something went wrong!", error: error})})
+                } else{
+                    res.json({message: "You do not own this plugin!"})
                 }
             })
             .catch(error => {res.json({message: "Something went wrong!", error: error})})
-
     }
-
 };
 
 module.exports.updateRating = (req, res) => {
