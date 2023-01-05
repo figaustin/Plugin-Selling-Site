@@ -45,7 +45,8 @@ module.exports.login = async(req, res) => {
 
         const userToken = jwt.sign({
             id: user._id,
-            userName : user.userName
+            userName : user.userName,
+            admin: user.admin
         }, "TokEN!");
 
         res.cookie('usertoken', userToken, "TokEN!", {httpOnly: true})
@@ -61,7 +62,8 @@ module.exports.register = (req, res) => {
                     .then(user => {
                         const userToken = jwt.sign({
                             id: user._id,
-                            userName: user.userName
+                            userName: user.userName,
+                            admin: user.admin
                         }, "TokEN!");
 
                         res.cookie('usertoken', userToken, "TokEN!", {
