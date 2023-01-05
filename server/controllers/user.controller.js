@@ -98,7 +98,7 @@ module.exports.userPurchasePlugin = (req, res) => {
                     else {
                         
 
-                        User.findByIdAndUpdate({_id: decodedJWT.payload.id}, { $push: {purchasedPlugins: purchase}})
+                        User.findByIdAndUpdate({_id: decodedJWT.payload.id}, { $push: {purchasedPlugins: purchase}}, {new: true})
                         .then(user => {res.json({user: user})})
                         .catch(error => {res.json({message: "Something went wrong!", error: error})})
                     }
@@ -110,5 +110,11 @@ module.exports.userPurchasePlugin = (req, res) => {
     } else {
         res.json({message: "Please login to do that!"})
     }
+}
+
+module.exports.getUsersPurchasedPlugins = (req,res) => {
+    User.findOne({_id: req.params.id}).populate('purchasedPlugins.plugin_id')
+        .then(user => {res.json({plugins: user.purchasedPlugins})})
+        .catch(error => {res.json({message: "Something went wrong!", error: error})})
 }
 

@@ -1,11 +1,11 @@
 const mongoose = require('mongoose')
 
 const RatingSchema = new mongoose.Schema({
-    user_id: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-    plugin_id: {
+    plugin: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'MinecraftPlugin'
     },

@@ -6,7 +6,7 @@ const Tag = require('../models/tag.model');
 
 
 module.exports.findPluginById = (req, res) => {
-    MinecraftPlugin.findOne({_id: req.params.id}).populate('ratings').populate('tags')
+    MinecraftPlugin.findOne({_id: req.params.id}).populate('ratings').populate('tags').populate('author')
         .then(minecraftPlugin => {res.json({minecraftPlugin: minecraftPlugin})})
         .catch(err => res.json({message: "Something went wrong!", error: err}))
 };
@@ -71,8 +71,8 @@ module.exports.addNewPlugin = (req, res) => {
         .then(newPlugin => {
             res.json({newPlugin: newPlugin})
             User.findByIdAndUpdate({_id: decodedJWT.payload.id}, { $push: {uploadedPlugins: newPlugin}})
-                .then(user => res.json({user: user}))
-                .catch(error => res.json({error: error}))
+                .then(user => {})
+                
         })
         .catch(error => {res.json({message: "Something went wrong!", error: error})})
     } else {
@@ -83,22 +83,28 @@ module.exports.addNewPlugin = (req, res) => {
 module.exports.updatePlugin = (req,res) => {
     const decodedJWT = jwt.decode(req.cookies.usertoken, {complete: true});
 
-    MinecraftPlugin.findOne({_id: req.params.id})
-        .then(minecraftPlugin => {
-            if(minecraftPlugin.author == decodedJWT.payload.id || decodedJWT.payload.admin) {
-                MinecraftPlugin.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true})
-                .then(result => res.json({updatedPlugin: result}))
-                .catch(error => res.json({message: "Something went wrong!", error: error}))
-            } else {
-                res.json({message: "User is not an admin or the owner of this plugin!"})
-            }
-        })
-        .catch(error => {res.json({message: "Something went wrong!", error: error})})
+    if(req.cookies.usertoken != null) {
+        MinecraftPlugin.findOne({_id: req.params.id})
+            .then(minecraftPlugin => {
+                if(minecraftPlugin.author == decodedJWT.payload.id || decodedJWT.payload.admin) {
+                    MinecraftPlugin.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true})
+                    .then(result => res.json({updatedPlugin: result}))
+                    .catch(error => res.json({message: "Something went wrong!", error: error}))
+                } else {
+                    res.json({message: "User is not an admin or the owner of this plugin!"})
+                }
+            })
+            .catch(error => {res.json({message: "Something went wrong!", error: error})})
+
+    } else {
+        res.json({message: "You must be logged in to do that!"})
+    }
 };
 
 module.exports.deletePlugin = (req, res) => {
     const decodedJWT = jwt.decode(req.cookies.usertoken, {complete: true});
 
+    if(req.cookies.usertoken != null) {
     MinecraftPlugin.findOne({_id: req.params.id})
         .then(minecraftPlugin => {
             if(minecraftPlugin.author == decodedJWT.payload.id || decodedJWT.payload.admin) {
@@ -110,6 +116,9 @@ module.exports.deletePlugin = (req, res) => {
             }
         })
         .catch(error => {res.json({message: "Something went wrong!", error: error})})
+    } else {
+        res.json({message: "You must be logged in to do that!"})
+    }
 };
 
 module.exports.getAllPlugins = (req, res) => {

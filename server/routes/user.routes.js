@@ -9,4 +9,5 @@ module.exports = (app) => {
     app.get("/api/user/logout", UserController.logout);
     app.get("/api/user/:id", UserController.findUserById);
     app.put("/api/user/:id/purchasePlugin/:pluginId", UserController.userPurchasePlugin);
+    app.get("/api/user/:id/getPurchasedPlugins", UserController.getUsersPurchasedPlugins)
 }
