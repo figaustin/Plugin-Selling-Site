@@ -69,3 +69,15 @@ module.exports.getAllPlugins = (req, res) => {
         .then(results => {res.json({results: results})})
         .catch(error => {res.json({message: "Something went wrong!", error: error})})
 };
+
+module.exports.addRatingToPlugin = (req, res) => {
+    const decodedJWT = jwt.decode(req.cookies.usertoken, {complete: true});
+
+    if(req.cookies.usertoken != null) {
+        MinecraftPlugin.findOne({_id: decodedJWT.payload.id})
+            .then(rating => {
+                MinecraftPlugin.findByIdAndUpdate()
+            })
+    }
+    
+}

@@ -1,8 +1,6 @@
 const User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const axios = require('axios')
-const mongoose = require('mongoose')
 const MinecraftPlugin = require('../models/plugin.model')
 
 
@@ -91,4 +89,25 @@ module.exports.getLoggedInUser = (req, res) => {
         .then(foundUser => {res.json({results: foundUser})})
         .catch(error => {res.json({message: "Something went wrong!", error: error})})
 };
+
+module.exports.userPurchasePlugin = (req, res) => {
+    const decodedJWT = jwt.decode(req.cookies.usertoken, {complete: true})
+
+   
+    if(req.cookies.usertoken != null) {
+        User.findOne({_id: decodedJWT.payload.id})
+            .then(user => {
+                if(user.purchasedPlugins.includes(req.params.pluginId)) {
+                    res.json({message: "User has already purchased this plugin!"})
+                }
+                else {
+                    User.findByIdAndUpdate({_id: decodedJWT.payload.id}, { $push: {purchasedPlugins: req.params.pluginId}})
+                    .then(user => {res.json({user: user})})
+                    .catch(error => {res.json({message: "Something went wrong!", error: error})})
+                 }
+            })
+
+        
+    }
+}
 

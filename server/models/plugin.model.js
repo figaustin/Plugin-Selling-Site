@@ -16,6 +16,10 @@ const Rating = new mongoose.Schema({
         type: Number,
         min: [1, "Rating must be from 1-5"],
         max: [5, "Rating must be from 1-5"]
+    },
+    review: {
+        type: String,
+        minLength: [10, "Review must be at least 10 characters long!"],
     }
     },
 

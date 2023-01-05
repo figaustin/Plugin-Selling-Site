@@ -10,4 +10,5 @@ module.exports = (app) => {
     app.get("/api/user/:id/plugins/uploaded", UserController.findUsersUploadedPlugins);
     app.get("/api/user/:id/plugins/purchased", UserController.findUserPurchasedPlugins);
     app.get("/api/user/:id", UserController.findUserById);
+    app.put("/api/user/purchasePlugin/:pluginId", UserController.userPurchasePlugin);
 }
