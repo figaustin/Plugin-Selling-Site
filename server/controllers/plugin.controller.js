@@ -18,13 +18,13 @@ module.exports.uploadPlugin = async (req, res) => {
             return res.status(400).send({message: "Please upload a file!"});
         }
         
-        MinecraftPlugin.findByIdAndUpdate({_id: req.params.id}, {$set: {file: "filename"}})
+        MinecraftPlugin.findByIdAndUpdate({_id: req.params.id}, { file: req.file.originalname })
+            .then(plugin => {res.json({plugin: plugin})})
+          
         res.status(200).send({
             message: "Uploaded the file successfully: " + req.file.originalname, 
         });
         
-            // .then(plugin => {res.json({plugin: plugin})})
-            // .catch(error => res.json({error: error}))
     } catch (err) {
         res.status(500).send({
             message: `Could not upload the file: ${err}`,

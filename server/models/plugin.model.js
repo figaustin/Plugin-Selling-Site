@@ -20,13 +20,14 @@ const MinecraftPluginSchema = new mongoose.Schema({
         maxLength: [250, "Plugin description can not be more than 250 characters!"]
     },
     versions: {
-        type: [Number],
-        //require: [true, "Please enter valid minecraft versions this plugin works with!"],
-        minLength: [2, "Please enter valid versions!"],
-        maxLength: [250, "Version string must be less than 250 characters!"]
+        type: [String],
+        enum: ['1.19', '1.18', '1.17', '1.16', '1.15', '1.14', '1.13', '1.12', '1.11', '1.10', '1.9', '1.8'],
+        require: [true, "Please enter valid minecraft versions this plugin works with!"],
+       
     },
     tags: {
-        type: [String],
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Tag'
     },
     price: {
         type: Number,
