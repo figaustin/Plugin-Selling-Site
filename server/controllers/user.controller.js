@@ -17,7 +17,7 @@ module.exports.getAllUsers = (req, res) => {
 };
 
 module.exports.login = async(req, res) => {
-    const user = await User.findOne({email: req.body.email });
+    const user = await User.findOne({email: req.body.email }).select('+password');
 
         if(user === null){
             return res.json({error: "User not found."})
